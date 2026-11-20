@@ -510,11 +510,5 @@ def create_final_report():
     doc.save(output_filename)
     print(f"Final Project Report successfully created at {output_filename}")
 
-    try:
-        doc.save("Final_Project_Report_AI_Multilingual_Messenger.docx")
-        print("Also updated Final_Project_Report_AI_Multilingual_Messenger.docx")
-    except Exception:
-        pass
-
 if __name__ == "__main__":
     create_final_report()
