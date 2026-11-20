@@ -28,16 +28,15 @@ class AppConstants {
 class AppConfig {
   static const String supabaseUrl = String.fromEnvironment(
     'SUPABASE_URL',
-    defaultValue: 'https://xwvwlwbqzatkwycszkih.supabase.co',
+    defaultValue: '',
   );
   static const String supabaseAnonKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',
-    defaultValue:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3dndsd2JxemF0a3d5Y3N6a2loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI4MzY1ODMsImV4cCI6MjEwODQxMjU4M30.w5iElfjitutUxlockEwYZGxuq6nMqT4a33qKsuj9tgY',
+    defaultValue: '',
   );
   static const String backendUrl = String.fromEnvironment(
     'BACKEND_URL',
-    defaultValue: 'https://ai-multilingual-messenger.vercel.app',
+    defaultValue: '',
   );
 
   static bool get isConfigured =>

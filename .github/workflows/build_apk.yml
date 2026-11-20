@@ -31,7 +31,15 @@ jobs:
         run: flutter analyze
 
       - name: Build Android Release APK
-        run: flutter build apk --release --dart-define=BACKEND_URL=https://ai-multilingual-messenger.vercel.app
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+        run: |
+          flutter build apk --release \
+            --dart-define=SUPABASE_URL="${SUPABASE_URL}" \
+            --dart-define=SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY}" \
+            --dart-define=BACKEND_URL="${BACKEND_URL}"
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
