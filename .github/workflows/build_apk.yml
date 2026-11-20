@@ -31,7 +31,7 @@ jobs:
         run: flutter analyze
 
       - name: Build Android Release APK
-        run: flutter build apk --release
+        run: flutter build apk --release --dart-define=BACKEND_URL=https://ai-multilingual-messenger.vercel.app
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4

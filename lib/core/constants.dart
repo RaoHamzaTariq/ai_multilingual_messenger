@@ -37,7 +37,7 @@ class AppConfig {
   );
   static const String backendUrl = String.fromEnvironment(
     'BACKEND_URL',
-    defaultValue: 'http://localhost:8000',
+    defaultValue: 'https://ai-multilingual-messenger.vercel.app',
   );
 
   static bool get isConfigured =>
