@@ -37,6 +37,7 @@ jobs:
           BACKEND_URL: ${{ secrets.BACKEND_URL }}
         run: |
           flutter build apk --release \
+            --android-skip-build-dependency-validation \
             --dart-define=SUPABASE_URL="${SUPABASE_URL}" \
             --dart-define=SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY}" \
             --dart-define=BACKEND_URL="${BACKEND_URL}"
