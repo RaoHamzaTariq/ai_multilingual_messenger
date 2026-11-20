@@ -2,30 +2,21 @@ import os
 import docx
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
-from docx.oxml import OxmlElement, parse_xml
-from docx.oxml.ns import nsdecls, qn
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.oxml import parse_xml
+from docx.oxml.ns import nsdecls
 
 def create_final_report():
     doc = docx.Document()
 
-    # Page Margins: 1 inch all around (matching Phase 2 document)
+    # Page Margins: 1 inch all around (Exact Phase 2 specification)
     for section in doc.sections:
         section.top_margin = Inches(1)
         section.bottom_margin = Inches(1)
         section.left_margin = Inches(1)
         section.right_margin = Inches(1)
 
-        # Footer styling matching Phase 2
-        footer = section.footer
-        p_f = footer.paragraphs[0]
-        p_f.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        r_f = p_f.add_run("AI Multilingual Messenger — Final Project Comprehensive Report")
-        r_f.font.size = Pt(8.5)
-        r_f.font.color.rgb = RGBColor(120, 130, 140)
-        r_f.font.name = "Calibri"
-
-    # Exact Color Definitions from Phase 2
+    # Exact Color definitions matching Phase 2
     PRIMARY_COLOR = RGBColor(0, 122, 135)      # Teal #007A87
     SECONDARY_COLOR = RGBColor(70, 80, 95)    # Slate #46505F
     DARK_TEXT = RGBColor(33, 37, 41)          # Charcoal #212529
@@ -122,46 +113,32 @@ def create_final_report():
     sub_p = doc.add_paragraph()
     sub_p.paragraph_format.space_after = Pt(18)
     sub_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r_sub = sub_p.add_run("Complete Final Project Report & Technical Architecture Documentation")
+    r_sub = sub_p.add_run("Final Project Deliverables & Technical Architecture Report")
     r_sub.font.size = Pt(14)
     r_sub.font.name = "Calibri"
     r_sub.font.color.rgb = SECONDARY_COLOR
 
-    # Meta Table (matching Phase 2 box layout exactly)
+    # Meta box (Exact Phase 2 Table Layout)
     meta_table = doc.add_table(rows=5, cols=2)
     meta_table.alignment = WD_TABLE_ALIGNMENT.CENTER
     meta_data = [
         ("Course / Project:", "Mobile Application Development / Capstone Project"),
         ("Project Name:", "AI Multilingual Messenger"),
-        ("Group Members:", 
-         "1. Rao Hamza Tariq (CSC-24F-042)\n"
-         "2. Imtiaz Maqbool (SCS-24F-003)\n"
-         "3. Fahad Yaseen (CSC-25S-201)\n"
-         "4. Muhammad Saad (CSC-24F-025)\n"
-         "5. Shahmeer Baqai (CSC-24F-027)"),
-        ("Date & Status:", "November 2026 — Final Project Completed, Verified & Approved"),
-        ("Technology Stack:", "Flutter 3.x, Supabase (PostgreSQL 15 / Auth / Realtime / Storage), FastAPI, Groq AI, Google Gemini 3.1 Flash-Lite, Audio Record & Playback"),
+        ("Group Members:",
+         "Rao Hamza Tariq (CSC-24F-042)\n"
+         "Imtiaz Maqbool (SCS-24F-003)\n"
+         "Fahad Yaseen (CSC-25S-201)\n"
+         "Muhammad Saad (CSC-24F-025)\n"
+         "Shahmeer Baqai (CSC-24F-027)"),
+        ("Date & Status:", "November 2026 — Final Project Completed & Verified"),
+        ("Technology Stack:", "Flutter 3.x, Supabase (PostgreSQL/Auth/Realtime/Storage), FastAPI, Groq AI, Google Gemini 3.1 Flash-Lite, Audio Record & Playback"),
     ]
     for i, (k, v) in enumerate(meta_data):
         cell_k, cell_v = meta_table.cell(i, 0), meta_table.cell(i, 1)
         cell_k.width = Inches(2.2)
         cell_v.width = Inches(4.3)
-
-        # Style borders like Phase 2
-        for cell in (cell_k, cell_v):
-            borders = parse_xml(f'''
-                <w:tcBorders {nsdecls("w")}>
-                    <w:top w:val="single" w:sz="4" w:space="0" w:color="{BORDER_COLOR}"/>
-                    <w:bottom w:val="single" w:sz="4" w:space="0" w:color="{BORDER_COLOR}"/>
-                    <w:left w:val="single" w:sz="4" w:space="0" w:color="{BORDER_COLOR}"/>
-                    <w:right w:val="single" w:sz="4" w:space="0" w:color="{BORDER_COLOR}"/>
-                </w:tcBorders>
-            ''')
-            cell._tc.get_or_add_tcPr().append(borders)
-
         pk = cell_k.paragraphs[0]
-        pk.paragraph_format.space_before = Pt(3)
-        pk.paragraph_format.space_after = Pt(3)
+        pk.paragraph_format.space_after = Pt(2)
         rk = pk.add_run(k)
         rk.bold = True
         rk.font.size = Pt(10)
@@ -169,12 +146,10 @@ def create_final_report():
         rk.font.color.rgb = PRIMARY_COLOR
 
         pv = cell_v.paragraphs[0]
-        pv.paragraph_format.space_before = Pt(3)
-        pv.paragraph_format.space_after = Pt(3)
+        pv.paragraph_format.space_after = Pt(2)
         rv = pv.add_run(v)
-        rv.font.size = Pt(9.5)
+        rv.font.size = Pt(10)
         rv.font.name = "Calibri"
-        rv.font.color.rgb = DARK_TEXT
 
     doc.add_paragraph().paragraph_format.space_after = Pt(12)
 
@@ -183,26 +158,26 @@ def create_final_report():
     # ==========================
     style_heading(doc.add_paragraph(), "1. Executive Summary", 16)
     add_body_paragraph(
-        "The AI Multilingual Messenger is an end-to-end real-time messaging application designed to dissolve language "
-        "barriers in mobile and digital communication. While standard chat apps force users to manually copy foreign text, "
-        "switch to external translation tools, and paste translations back into chat, this project integrates automatic, "
-        "context-aware AI translation directly into the real-time message stream for both text and voice notes."
+        "The AI Multilingual Messenger is a complete real-time messaging platform designed to eliminate language "
+        "barriers in modern communication. While traditional messaging applications force users to manually copy foreign "
+        "messages, switch out of the app to external translation tools, and paste translations back into chat, this project "
+        "integrates automatic, context-aware AI translation directly into the real-time message stream for both text and voice notes."
     )
     add_body_paragraph(
-        "The application has been engineered across three cohesive phases: Phase 1 established the Supabase authentication, "
-        "profiles with preferred language choices, dark/light themes, and Groq AI text translation; Phase 2 introduced "
-        "username-based friendship requests, the 3-tab home navigation (Chats, Friends, Profile), Supabase Realtime 1-on-1 "
-        "messaging, image sharing with strict 1 MB validation, and in-bubble voice recording up to 60 seconds; Phase 3 completed "
-        "the suite with multimodal AI voice translation (Gemini 3.1 Flash-Lite), in-chat message search, in-app notification "
-        "banners, and real-time message delivery/seen checkmarks."
+        "The project has been completed across three comprehensive phases: Phase 1 established the database schema, "
+        "Supabase authentication, user onboarding with preferred language preferences, dark/light themes, and Groq AI text "
+        "translation; Phase 2 delivered the username-based friendship system, 3-tab home navigation (Chats, Friends, Profile), "
+        "real-time 1-on-1 messaging via Supabase Realtime, image sharing with strict 1 MB validation, and in-bubble voice recording up to "
+        "60 seconds; Phase 3 finalized the system with multimodal AI voice translation (Gemini 3.1 Flash-Lite), in-chat message search, "
+        "in-app notification banners, and real-time message delivery/seen status indicators (blue double-ticks)."
     )
     add_body_paragraph(
         "All code is implemented in simple, human-readable Flutter following plain Provider state management without "
-        "over-engineering, passing all static code analyses (0 issues) and automated widget test suites."
+        "over-engineering, passing all static code analyses (0 issues) and automated test suites."
     )
 
     # ==========================
-    # SECTION 2: ARCHITECTURE & MESSAGE LIFECYCLES
+    # SECTION 2: SYSTEM ARCHITECTURE & MESSAGE LIFECYCLES
     # ==========================
     style_heading(doc.add_paragraph(), "2. Architecture & Message Lifecycles", 16)
     add_body_paragraph(
@@ -227,10 +202,11 @@ def create_final_report():
     )
     add_body_paragraph(
         "Sender taps the microphone icon to begin audio recording (Opus WebM on browser platforms, AAC M4A on mobile). "
-        "A live timer counts up to 60 seconds (AppConstants.maxVoiceDurationSeconds) with auto-stop cap. The audio file is uploaded to "
-        "the private 'chat-voice' bucket, and the recipient client calls FastAPI `POST /translate/voice`. Google Gemini 3.1 Flash-Lite "
-        "transcribes the audio verbatim, detects the language (counting Roman Urdu as Urdu), and translates the speech into the recipient's "
-        "preferred language in a single inference call. The voice bubble reactively displays the translated transcript with a toggle button.",
+        "A live timer counts up to 60 seconds (AppConstants.maxVoiceDurationSeconds). If 60 seconds are reached, the recorder "
+        "automatically finalizes and sends the audio. The file uploads to the private 'chat-voice' bucket, and the recipient client "
+        "calls FastAPI `POST /translate/voice`. Google Gemini 3.1 Flash-Lite transcribes the audio verbatim, detects the spoken language "
+        "(counting Roman Urdu as Urdu), and translates the speech into the recipient's preferred language. The voice bubble reactively "
+        "displays the translated transcript with an interactive toggle link.",
         bold_prefix="• Voice Note & AI Translation Pipeline: "
     )
 
@@ -239,8 +215,8 @@ def create_final_report():
     # ==========================
     style_heading(doc.add_paragraph(), "3. Final Project Deliverables Checklist", 16)
     checklist_items = [
-        ("Supabase Auth & Session Persistence", "Completed", "Email/password signup, login, auto-restore session on restart, and sign out"),
-        ("User Onboarding & Language Picker", "Completed", "Selection of primary language (10 supported languages) saved to profiles table"),
+        ("Supabase Auth & Session Management", "Completed", "Email/password signup, login, auto-restore session across restarts, and sign out"),
+        ("User Onboarding & Language Selection", "Completed", "Selection of primary language (10 supported languages) saved to profiles table"),
         ("Friend Search by Username", "Completed", "Exact @username search in Supabase with self-add and duplicate request prevention"),
         ("Send, Accept & Reject Requests", "Completed", "State management in FriendsProvider with pending incoming/outgoing filtering"),
         ("3-Tab Navigation Bar", "Completed", "Material 3 NavigationBar on HomeScreen hosting Chats, Friends, and Profile tabs"),
@@ -255,7 +231,7 @@ def create_final_report():
         ("In-Chat Message Search Screen", "Completed", "Instant search filtering across text, translation, voice transcripts, and photos"),
         ("In-App Notification Banner", "Completed", "Top overlay banner for incoming messages with sender preview and 1-tap navigation"),
         ("Message Delivery & Seen Status Ticks", "Completed", "Realtime double-ticks: subtle gray for delivered/unseen, bright blue for seen"),
-        ("Material 3 Light & Dark Mode", "Completed", "Dynamic theme toggle with persisted user preference across sessions"),
+        ("Material 3 Light / Dark Theme", "Completed", "Dynamic theme toggle with persisted user preference across sessions"),
         ("Code Quality & Static Analysis", "Completed", "flutter analyze completed with 0 errors/0 warnings; flutter test passed"),
     ]
 
@@ -292,7 +268,7 @@ def create_final_report():
     # ==========================
     style_heading(doc.add_paragraph(), "4. Implementation Details & Visual Evidence", 16)
 
-    # 4.1 Friendship & Social Layer
+    # 4.1 Friendship System
     style_heading(doc.add_paragraph(), "4.1 Friendship System & Request Management", 13, SECONDARY_COLOR)
     add_body_paragraph(
         "The social graph is managed by the friendships table and exposed via FriendsProvider. Users can look up friends "
@@ -312,7 +288,7 @@ def create_final_report():
         "Log in as user B after user A sends a request. Capture the 'Friend Requests (1)' section with the action buttons."
     )
 
-    # 4.2 Home Screen & 3-Tab Architecture
+    # 4.2 Home Screen Navigation
     style_heading(doc.add_paragraph(), "4.2 Home Screen Navigation (Chats, Friends, Profile)", 13, SECONDARY_COLOR)
     add_body_paragraph(
         "HomeScreen implements an IndexedStack controlled by a modern Material 3 NavigationBar. "
@@ -534,7 +510,6 @@ def create_final_report():
     doc.save(output_filename)
     print(f"Final Project Report successfully created at {output_filename}")
 
-    # Also try to update the original filename if not currently open in Word
     try:
         doc.save("Final_Project_Report_AI_Multilingual_Messenger.docx")
         print("Also updated Final_Project_Report_AI_Multilingual_Messenger.docx")
