@@ -237,7 +237,9 @@ class SupabaseService {
             if (payload.eventType == PostgresChangeEvent.insert) {
               onMessage(msg);
             } else if (payload.eventType == PostgresChangeEvent.update) {
-              onMessageUpdated?.(msg);
+              if (onMessageUpdated != null) {
+                onMessageUpdated(msg);
+              }
             }
           }
         }

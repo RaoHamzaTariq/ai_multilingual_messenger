@@ -9,22 +9,22 @@ from docx.oxml.ns import nsdecls, qn
 def create_final_report():
     doc = docx.Document()
 
-    # Page Margins: 1 inch standard academic/industry
-    for section in doc.sections:
+    # Page Margins: 1 inch all around (matching Phase 2 doc)
+    sections = doc.sections
+    for section in sections:
         section.top_margin = Inches(1)
         section.bottom_margin = Inches(1)
         section.left_margin = Inches(1)
         section.right_margin = Inches(1)
 
-    # Color Palette: Clean Professional Teal & Slate
-    PRIMARY = RGBColor(0, 122, 135)       # Primary Teal #007A87
-    SECONDARY = RGBColor(70, 80, 95)      # Slate Gray #46505F
-    DARK_TEXT = RGBColor(33, 37, 41)      # Charcoal #212529
-    ACCENT_BLUE = RGBColor(24, 119, 242)  # Bright Blue #1877F2
-    BG_LIGHT = "F8FAFC"                   # Light Slate Box
-    BORDER_LIGHT = "CBD5E1"               # Subtle Border
+    # Color Palette matching Phase 2 design
+    PRIMARY_COLOR = RGBColor(0, 122, 135)      # Primary Teal #007A87
+    SECONDARY_COLOR = RGBColor(70, 80, 95)    # Slate #46505F
+    DARK_TEXT = RGBColor(33, 37, 41)          # Charcoal #212529
+    BOX_BG = "F1F5F9"                         # Slate-100
+    BORDER_COLOR = "CBD5E1"                   # Slate-300
 
-    def style_heading(p, text, size_pt, color=PRIMARY, bold=True, space_before=14, space_after=6):
+    def style_heading(p, text, size_pt, color=PRIMARY_COLOR, bold=True, space_before=14, space_after=6):
         p.paragraph_format.space_before = Pt(space_before)
         p.paragraph_format.space_after = Pt(space_after)
         run = p.add_run(text)
@@ -34,7 +34,7 @@ def create_final_report():
         run.font.name = "Calibri"
         return run
 
-    def add_para(text, bold_prefix="", space_after=5, italic=False):
+    def add_body_paragraph(text, bold_prefix="", space_after=4):
         p = doc.add_paragraph()
         p.paragraph_format.space_after = Pt(space_after)
         p.paragraph_format.line_spacing = 1.15
@@ -47,26 +47,25 @@ def create_final_report():
         r_text = p.add_run(text)
         r_text.font.size = Pt(11)
         r_text.font.name = "Calibri"
-        r_text.font.italic = italic
         r_text.font.color.rgb = DARK_TEXT
         return p
 
-    def add_callout(title, text):
+    def add_callout_box(title, text):
         table = doc.add_table(rows=1, cols=1)
         table.alignment = WD_TABLE_ALIGNMENT.CENTER
         cell = table.cell(0, 0)
         cell.width = Inches(6.5)
 
         tcPr = cell._tc.get_or_add_tcPr()
-        shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="{BG_LIGHT}"/>')
+        shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="{BOX_BG}"/>')
         tcPr.append(shd)
 
         borders = parse_xml(f'''
             <w:tcBorders {nsdecls("w")}>
-                <w:top w:val="single" w:sz="6" w:space="0" w:color="{BORDER_LIGHT}"/>
-                <w:left w:val="single" w:sz="24" w:space="0" w:color="007A87"/>
-                <w:bottom w:val="single" w:sz="6" w:space="0" w:color="{BORDER_LIGHT}"/>
-                <w:right w:val="single" w:sz="6" w:space="0" w:color="{BORDER_LIGHT}"/>
+                <w:top w:val="single" w:sz="6" w:space="0" w:color="{BORDER_COLOR}"/>
+                <w:left w:val="single" w:sz="20" w:space="0" w:color="007A87"/>
+                <w:bottom w:val="single" w:sz="6" w:space="0" w:color="{BORDER_COLOR}"/>
+                <w:right w:val="single" w:sz="6" w:space="0" w:color="{BORDER_COLOR}"/>
             </w:tcBorders>
         ''')
         tcPr.append(borders)
@@ -77,7 +76,7 @@ def create_final_report():
         r_t = p.add_run(f"📌 {title}\n")
         r_t.bold = True
         r_t.font.size = Pt(11)
-        r_t.font.color.rgb = PRIMARY
+        r_t.font.color.rgb = PRIMARY_COLOR
         r_t.font.name = "Calibri"
 
         r_b = p.add_run(text)
@@ -94,15 +93,15 @@ def create_final_report():
         cell.width = Inches(6.5)
 
         tcPr = cell._tc.get_or_add_tcPr()
-        shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="F1F5F9"/>')
+        shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="{BOX_BG}"/>')
         tcPr.append(shd)
 
         borders = parse_xml(f'''
             <w:tcBorders {nsdecls("w")}>
-                <w:top w:val="single" w:sz="6" w:space="0" w:color="{BORDER_LIGHT}"/>
-                <w:left w:val="single" w:sz="20" w:space="0" w:color="007A87"/>
-                <w:bottom w:val="single" w:sz="6" w:space="0" w:color="{BORDER_LIGHT}"/>
-                <w:right w:val="single" w:sz="6" w:space="0" w:color="{BORDER_LIGHT}"/>
+                <w:top w:val="single" w:sz="6" w:space="0" w:color="{BORDER_COLOR}"/>
+                <w:left w:val="single" w:sz="18" w:space="0" w:color="007A87"/>
+                <w:bottom w:val="single" w:sz="6" w:space="0" w:color="{BORDER_COLOR}"/>
+                <w:right w:val="single" w:sz="6" w:space="0" w:color="{BORDER_COLOR}"/>
             </w:tcBorders>
         ''')
         tcPr.append(borders)
@@ -113,19 +112,19 @@ def create_final_report():
         r_id = p.add_run(f"📷 [ SCREENSHOT {placeholder_id} ]: {title}\n")
         r_id.bold = True
         r_id.font.size = Pt(11)
-        r_id.font.color.rgb = PRIMARY
+        r_id.font.color.rgb = PRIMARY_COLOR
         r_id.font.name = "Calibri"
 
-        r_desc = p.add_run(f"Demonstrates: {description}\n")
+        r_desc = p.add_run(f"Description: {description}\n")
         r_desc.font.size = Pt(10)
         r_desc.font.name = "Calibri"
         r_desc.font.color.rgb = DARK_TEXT
 
-        r_inst = p.add_run(f"Capture Instructions: {instructions}\n\n")
+        r_inst = p.add_run(f"How to capture: {instructions}\n\n")
         r_inst.font.size = Pt(9.5)
         r_inst.font.italic = True
         r_inst.font.name = "Calibri"
-        r_inst.font.color.rgb = SECONDARY
+        r_inst.font.color.rgb = SECONDARY_COLOR
 
         r_paste = p.add_run("👉 [ PASTE YOUR SCREENSHOT IMAGE HERE ]\n")
         r_paste.bold = True
@@ -165,7 +164,7 @@ def create_final_report():
 
                 borders = parse_xml(f'''
                     <w:tcBorders {nsdecls("w")}>
-                        <w:bottom w:val="single" w:sz="4" w:space="0" w:color="{BORDER_LIGHT}"/>
+                        <w:bottom w:val="single" w:sz="4" w:space="0" w:color="{BORDER_COLOR}"/>
                         <w:top w:val="none"/>
                         <w:left w:val="none"/>
                         <w:right w:val="none"/>
@@ -184,244 +183,264 @@ def create_final_report():
         doc.add_paragraph().paragraph_format.space_after = Pt(8)
 
     # ==========================
-    # COVER / HEADER
+    # COVER / HEADER (Phase 2 Theme)
     # ==========================
-    p_title = doc.add_paragraph()
-    style_heading(p_title, "AI Multilingual Messenger", 26, PRIMARY, bold=True, space_before=10, space_after=4)
+    title_p = doc.add_paragraph()
+    title_p.paragraph_format.space_before = Pt(20)
+    title_p.paragraph_format.space_after = Pt(4)
+    title_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    r_title = title_p.add_run("AI Multilingual Messenger")
+    r_title.bold = True
+    r_title.font.size = Pt(26)
+    r_title.font.name = "Calibri"
+    r_title.font.color.rgb = PRIMARY_COLOR
 
-    p_sub = doc.add_paragraph()
-    r_sub = p_sub.add_run("Comprehensive Final Project Report & Technical Documentation")
-    r_sub.font.size = Pt(16)
+    sub_p = doc.add_paragraph()
+    sub_p.paragraph_format.space_after = Pt(16)
+    sub_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    r_sub = sub_p.add_run("Complete Final Project Report & Technical Documentation")
+    r_sub.font.size = Pt(14)
+    r_sub.font.name = "Calibri"
     r_sub.font.bold = True
-    r_sub.font.color.rgb = SECONDARY
-    p_sub.paragraph_format.space_after = Pt(14)
+    r_sub.font.color.rgb = SECONDARY_COLOR
 
-    # Metadata Table
-    meta_headers = ["Project Attribute", "Specification & Details"]
-    meta_rows = [
-        ["Project Title", "AI Multilingual Messenger (Real-Time Cross-Language Chat)"],
-        ["Application Category", "Real-Time Mobile/Web Messaging & Artificial Intelligence"],
-        ["Frontend Tech Stack", "Flutter 3 (Dart 3) • Material Design 3 • Provider (ChangeNotifier)"],
-        ["Backend Tech Stack", "FastAPI (Python 3.12) • Uvicorn • Asynchronous HTTPX Client"],
-        ["Database & Security", "Supabase (PostgreSQL 15) • Row Level Security (RLS) • JWT Auth"],
-        ["Real-Time Engine", "Supabase Realtime Channels (PostgreSQL WAL Replication)"],
-        ["AI Text Engine", "Groq Cloud API (`openai/gpt-oss-120b` & `llama-3.3-70b-versatile`)"],
-        ["AI Voice Engine", "Google Gemini Multimodal Audio (`gemini-3.1-flash-lite`)"],
-        ["Cloud Storage", "Supabase Storage: `chat-images` (<= 1MB) & `chat-voice` (<= 60s)"],
-        ["Delivery Status", "100% Complete (Phase 1, Phase 2, Phase 3 fully verified & passing)"]
+    # Metadata & Group Members Table
+    meta_table = doc.add_table(rows=5, cols=2)
+    meta_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    meta_data = [
+        ("Project Name:", "AI Multilingual Messenger"),
+        ("Group Members:", 
+         "1. Rao Hamza Tariq (CSC-24F-042)\n"
+         "2. Imtiaz Maqbool (SCS-24F-003)\n"
+         "3. Fahad Yaseen (CSC-25S-201)\n"
+         "4. Muhammad Saad (CSC-24F-025)\n"
+         "5. Shahmeer Baqai (CSC-24F-027)"),
+        ("Course / Project:", "Mobile Application Development & AI Capstone Project"),
+        ("Date & Status:", "November 2026 — Final Project Completed, Verified & Approved"),
+        ("Technology Stack:", "Flutter 3 (Dart 3), FastAPI (Python 3.12), Supabase (PostgreSQL 15 / RLS / Realtime / Storage), Groq AI (Text), Google Gemini 3.1 Flash-Lite (Voice)"),
     ]
-    add_styled_table(meta_headers, meta_rows)
+    for i, (k, v) in enumerate(meta_data):
+        cell_k, cell_v = meta_table.cell(i, 0), meta_table.cell(i, 1)
+        cell_k.width = Inches(2.2)
+        cell_v.width = Inches(4.3)
+        pk = cell_k.paragraphs[0]
+        pk.paragraph_format.space_after = Pt(2)
+        rk = pk.add_run(k)
+        rk.bold = True
+        rk.font.size = Pt(10)
+        rk.font.name = "Calibri"
+        rk.font.color.rgb = PRIMARY_COLOR
+
+        pv = cell_v.paragraphs[0]
+        pv.paragraph_format.space_after = Pt(2)
+        rv = pv.add_run(v)
+        rv.font.size = Pt(9.5)
+        rv.font.name = "Calibri"
+        rv.font.color.rgb = DARK_TEXT
+
+    doc.add_paragraph().paragraph_format.space_after = Pt(12)
 
     # ==========================
-    # SECTION 1: PROJECT ABSTRACT & PROBLEM STATEMENT
+    # SECTION 1: EXECUTIVE SUMMARY & PROBLEM STATEMENT
     # ==========================
-    p_s1 = doc.add_paragraph()
-    style_heading(p_s1, "1. Project Abstract & Problem Statement", 16)
-
-    add_para(
-        "Global digital communication continues to grow exponentially, yet language remains one of the greatest "
-        "barriers to natural cross-border collaboration and interpersonal connection. Most mainstream messaging "
-        "applications force users to manually copy foreign-language messages, switch to separate translation apps, "
-        "and paste translations back into chat. This process is clunky, breaks conversation flow, and fails completely "
+    style_heading(doc.add_paragraph(), "1. Executive Summary & Problem Statement", 16)
+    add_body_paragraph(
+        "Global digital communication continues to grow exponentially, yet language remains one of the primary "
+        "barriers to natural interpersonal connection and cross-border collaboration. Most mainstream messaging "
+        "applications force users to manually copy foreign-language messages, switch out of the app to external translation "
+        "tools, and paste translations back into chat. This creates high friction, breaks conversation flow, and fails completely "
         "for voice notes or regional colloquial dialects such as Roman Urdu."
     )
-
-    add_para(
-        "The AI Multilingual Messenger solves this fundamental problem by embedding high-speed, contextual AI "
-        "translation directly into the messaging core. Users type or speak in their native tongue, and their recipient "
-        "instantly receives the message translated into their own preferred language in real time.",
+    add_body_paragraph(
+        "The AI Multilingual Messenger solves this problem by embedding high-speed, contextual AI translation directly "
+        "into the messaging core. Users type or speak in their native tongue, and their recipient instantly receives the message "
+        "translated into their own preferred language in real time.",
         bold_prefix="The Solution: "
     )
-
-    add_callout(
+    add_callout_box(
         "Core Philosophy: Non-Blocking Delivery",
-        "Translation failure must NEVER block message delivery. If the AI model, backend, or network fails, "
-        "the message is still delivered immediately in its original language. Users can always tap 'Show original' "
-        "to verify verbatim phrasing."
+        "Translation failure must NEVER block message delivery. If the AI model, backend, or network encounters an issue, "
+        "the message is still delivered immediately in its original language. Users can always tap 'Show original' to verify verbatim phrasing."
     )
 
     # ==========================
-    # SECTION 2: SYSTEM ARCHITECTURE & DATA FLOW
+    # SECTION 2: SYSTEM ARCHITECTURE & LIFECYCLES
     # ==========================
-    p_s2 = doc.add_paragraph()
-    style_heading(p_s2, "2. System Architecture & Technical Flow", 16)
-
-    add_para(
-        "The project follows a secure, scalable 3-tier architecture with clean separation of concerns:"
+    style_heading(doc.add_paragraph(), "2. System Architecture & Message Lifecycles", 16)
+    add_body_paragraph(
+        "The application follows a secure 3-tier architecture separating user data management from AI translation workloads:"
     )
 
-    arch_headers = ["Layer", "Technologies", "Responsibilities"]
+    arch_headers = ["Tier", "Technologies", "Responsibilities"]
     arch_rows = [
-        ["Presentation Layer", "Flutter 3, Provider, Material 3", "Cross-platform UI (Web/Android), reactive state management, audio recording/playback, search filtering."],
-        ["API & AI Gateway", "FastAPI (Python), Uvicorn, HTTPX", "Secure JWT validation, rate limiting, Groq text translation, Gemini multimodal audio processing."],
-        ["Data & Realtime Layer", "Supabase, PostgreSQL, Storage Buckets", "User identity (Auth), relational data, Row Level Security, private media buckets, WebSocket realtime push."]
+        ["Presentation Tier", "Flutter 3, Provider, Material 3", "Cross-platform UI (Web/Android), reactive state management, audio recording/playback, search filtering, and delivery status indicators."],
+        ["API & AI Gateway", "FastAPI (Python 3.12), Uvicorn, HTTPX", "Secure JWT validation, rate limiting, Groq text translation, Gemini multimodal audio processing, and database caching."],
+        ["Data & Realtime Tier", "Supabase, PostgreSQL 15, Storage", "User identity (Auth), relational tables, Row Level Security (RLS), private media storage buckets, and WebSocket realtime replication."]
     ]
     add_styled_table(arch_headers, arch_rows)
 
-    add_para(
-        "1. Outgoing Message: User A types a message or speaks a voice note. Flutter uploads media (if any) to Supabase Storage and inserts the message row into the `messages` table.\n"
-        "2. Real-Time Broadcast: Supabase Realtime immediately pushes the new row over WebSocket to User B's active client.\n"
-        "3. Automated Translation: User B's client inspects the sender's language. If different from User B's preferred language, it calls FastAPI (`/translate/text` or `/translate/voice`).\n"
-        "4. AI Translation & Caching: FastAPI invokes Groq (for text) or Google Gemini Flash-Lite (for voice). Results are returned to User B and cached in the Supabase `translations` table so future loads cost zero AI tokens.\n"
-        "5. Read Receipts: When User B opens the chat, an update query sets `is_read = true`, triggering a real-time event back to User A to update their double checkmarks from gray to blue.",
-        bold_prefix="End-to-End Operational Pipeline: "
+    add_body_paragraph(
+        "Sender inserts a record into the 'messages' table directly in Supabase. Supabase Realtime emits "
+        "the new row event to the active recipient's channel. The recipient's client inspects the local 'translations' "
+        "table. If uncached, it sends an authenticated HTTP request (with Supabase JWT) to the FastAPI backend. Groq "
+        "(openai/gpt-oss-120b) translates the text into the recipient's preferred language, stores the result in "
+        "the database for future instant retrieval, and returns JSON. If translation fails, the client gracefully "
+        "displays the original text without crashing.",
+        bold_prefix="• Realtime Text Message Flow: "
+    )
+    add_body_paragraph(
+        "Sender selects an image via image_picker. The app validates the byte length against AppConstants.maxImageSizeBytes (1 MB). "
+        "Oversized files are immediately rejected with an explanatory SnackBar. Valid images are uploaded to the private 'chat-images' "
+        "Supabase Storage bucket, and a message of type 'image' containing the file path is inserted. Recipients generate a secure "
+        "signed URL to render the image in the bubble, with tap-to-expand full-screen zoom.",
+        bold_prefix="• Image Sharing Pipeline: "
+    )
+    add_body_paragraph(
+        "Sender taps the microphone icon to begin audio recording (Opus WebM on web browsers, AAC M4A on mobile). "
+        "A live timer counts up to 60 seconds (AppConstants.maxVoiceDurationSeconds) with auto-stop cap. The audio is uploaded to "
+        "the private 'chat-voice' bucket, and the recipient client invokes FastAPI `POST /translate/voice`. Google Gemini 3.1 Flash-Lite "
+        "transcribes the spoken audio, detects the language, and translates the transcript into the recipient's language in a single step.",
+        bold_prefix="• AI Voice Note Pipeline: "
     )
 
     # ==========================
-    # SECTION 3: DATABASE SCHEMA & SECURITY DESIGN
+    # SECTION 3: DELIVERABLES CHECKLIST
     # ==========================
-    p_s3 = doc.add_paragraph()
-    style_heading(p_s3, "3. Database Schema & Row-Level Security (RLS)", 16)
+    style_heading(doc.add_paragraph(), "3. Complete Project Deliverables Checklist", 16)
+    checklist_items = [
+        ("Supabase Auth & Session Management", "Completed", "Sign up, login, auto-restore session across restarts, and sign out"),
+        ("User Onboarding & Language Selection", "Completed", "Selection of primary language (10 supported languages) saved to profiles table"),
+        ("Friend Search by Username", "Completed", "Exact @username lookup in Supabase with self-add and duplicate request prevention"),
+        ("Friend Requests (Send, Accept, Reject)", "Completed", "Friendship state machine in FriendsProvider with incoming/outgoing tabs"),
+        ("3-Tab Navigation Bar", "Completed", "Material 3 NavigationBar hosting Chats, Friends, and Profile tabs"),
+        ("Realtime 1-on-1 Chat Screen", "Completed", "Active chat UI with auto-scrolling ListView and Supabase Realtime channel listener"),
+        ("AI Text Translation Engine", "Completed", "FastAPI /translate/text using Groq (openai/gpt-oss-120b) with Roman Urdu support"),
+        ("Show Original / Translated Toggle", "Completed", "message_bubble.dart displays 'Translated' badge and interactive toggle button"),
+        ("Image Sharing (max 1 MB)", "Completed", "Client-side byte validation, upload to chat-images bucket, full-screen viewer"),
+        ("Voice Recording & Playback (max 60s)", "Completed", "audio_service.dart using record 7.x, live timer bar, 60-second auto-stop cap"),
+        ("AI Voice Translation & Transcript", "Completed", "Gemini 3.1 Flash-Lite multimodal translation displaying transcript in bubble"),
+        ("In-Chat Message Search Screen", "Completed", "Instant search filtering across text, translation, voice transcripts, and photos"),
+        ("In-App Notification Banner", "Completed", "Top overlay banner for incoming messages with sender preview and 1-tap navigation"),
+        ("Message Delivery & Seen Ticks", "Completed", "Realtime double-ticks: subtle gray for delivered/unseen, bright blue for seen"),
+        ("Material 3 Light / Dark Theme", "Completed", "Dynamic theme toggle with persisted user preference across sessions"),
+        ("GitHub Actions Android APK Builder", "Completed", "Automated CI/CD workflow compiling release APK downloadable from GitHub Actions"),
+    ]
 
-    add_para(
-        "The database is designed with strict relational constraints and PostgreSQL Row-Level Security (RLS) "
-        "to guarantee total privacy between users."
+    t_check = doc.add_table(rows=len(checklist_items) + 1, cols=3)
+    t_check.alignment = WD_TABLE_ALIGNMENT.CENTER
+    headers = ["Deliverable / Milestone", "Status", "Verification Details"]
+    for j, h in enumerate(headers):
+        cell = t_check.cell(0, j)
+        tcPr = cell._tc.get_or_add_tcPr()
+        tcPr.append(parse_xml(f'<w:shd {nsdecls("w")} w:fill="007A87"/>'))
+        p = cell.paragraphs[0]
+        r = p.add_run(h)
+        r.bold = True
+        r.font.size = Pt(10)
+        r.font.color.rgb = RGBColor(255, 255, 255)
+        r.font.name = "Calibri"
+
+    for i, (item, stat, det) in enumerate(checklist_items):
+        r_cells = t_check.rows[i + 1].cells
+        r_cells[0].width = Inches(2.2)
+        r_cells[1].width = Inches(1.1)
+        r_cells[2].width = Inches(3.2)
+        r_cells[0].paragraphs[0].add_run(item).font.size = Pt(9.5)
+        r_stat = r_cells[1].paragraphs[0].add_run(stat)
+        r_stat.bold = True
+        r_stat.font.size = Pt(9.5)
+        r_stat.font.color.rgb = RGBColor(0, 140, 70)
+        r_cells[2].paragraphs[0].add_run(det).font.size = Pt(9)
+
+    doc.add_paragraph().paragraph_format.space_after = Pt(12)
+
+    # ==========================
+    # SECTION 4: DATABASE SCHEMA & SECURITY DESIGN
+    # ==========================
+    style_heading(doc.add_paragraph(), "4. Database Schema & Security Design", 16)
+    add_body_paragraph(
+        "The relational database schema is deployed on Supabase (PostgreSQL 15) with strict Row-Level Security (RLS) policies:"
     )
 
-    db_headers = ["Table Name", "Key Columns", "Security & RLS Rule"]
+    db_headers = ["Table Name", "Key Columns", "Security & Access Control (RLS)"]
     db_rows = [
-        ["profiles", "id (PK, FK auth.users), username, display_name, preferred_language, created_at", "Any authenticated user can read profiles (for friend search); only owner can edit."],
-        ["friendships", "id, requester_id, addressee_id, status ('pending','accepted','rejected'), created_at", "Users can only read friendships they belong to; addressee alone can update status."],
-        ["messages", "id, sender_id, receiver_id, type ('text','image','voice'), content, media_url, duration_seconds, is_read, created_at", "Read only by sender or receiver; insert allowed only between accepted friends; receiver can update `is_read`."],
-        ["translations", "id, message_id (FK messages), target_language, detected_language, transcript, translated_text, created_at", "Unique (message_id, target_language). Readable by chat participants; inserts performed by backend service role."]
+        ["profiles", "id (PK, FK auth.users), username, display_name, preferred_language, created_at", "Authenticated users can read (for username search); only the row owner can update their own profile."],
+        ["friendships", "id, requester_id, addressee_id, status ('pending','accepted','rejected'), created_at", "Users can only read rows where they are requester or addressee; only addressee can update status."],
+        ["messages", "id, sender_id, receiver_id, type ('text','image','voice'), content, media_url, duration_seconds, is_read, created_at", "Users can only read messages they sent or received. Inserts permitted only between accepted friends. Recipient can update `is_read`."],
+        ["translations", "id, message_id (FK messages), target_language, detected_language, transcript, translated_text, created_at", "Compound UNIQUE(message_id, target_language). Chat participants can read translations; inserts performed by backend service role."]
     ]
     add_styled_table(db_headers, db_rows)
 
     # ==========================
-    # SECTION 4: AI PROMPT ENGINEERING & TRANSLATION ENGINE
+    # SECTION 5: TECHNICAL CHALLENGES OVERCOME
     # ==========================
-    p_s4 = doc.add_paragraph()
-    style_heading(p_s4, "4. AI Models & Prompt Engineering", 16)
-
-    add_para(
-        "To achieve professional, accurate translations without unwanted conversational fluff, the backend "
-        "enforces strict JSON schemas on both Groq and Gemini."
+    style_heading(doc.add_paragraph(), "5. Technical Challenges & Engineering Solutions", 16)
+    add_body_paragraph(
+        "Web browsers require `AudioEncoder.opus` (`audio/webm`), while mobile devices default to `AudioEncoder.aacLc` (`audio/m4a`). Using mobile defaults caused the browser mic to fail silently. "
+        "Solution: Implemented platform branching with `kIsWeb`, recording `.webm` on browsers and `.m4a` on mobile, while reading audio bytes via `cross_file` `XFile.readAsBytes()` without brittle `dart:io` imports.",
+        bold_prefix="1. Web vs Mobile Audio Codec Adaptation: "
     )
-
-    add_callout(
-        "Text Translation Prompt (Groq / LLaMA / GPT-OSS)",
-        "Prompt Instruction:\n"
-        "'You are a precise translator for a messaging app. Translate the following text into {target_language}.\n"
-        "Detect the source language. Roman Urdu must count as Urdu.\n"
-        "Preserve emojis, names, slang, and emotional tone.\n"
-        "If already in the target language, return it unchanged.\n"
-        "Reply with JSON only: {\"detected_language\": \"<code>\", \"translated_text\": \"<text>\"}'"
-    )
-
-    add_callout(
-        "Voice Multimodal Audio Prompt (Google Gemini 3.1 Flash-Lite)",
-        "Prompt Instruction:\n"
-        "'Listen to this audio voice note carefully.\n"
-        "1. Transcribe verbatim what was spoken.\n"
-        "2. Detect the spoken language (Roman Urdu counts as Urdu).\n"
-        "3. Translate the transcript into {target_language}.\n"
-        "Reply with JSON only: {\"transcript\": \"<text>\", \"detected_language\": \"<code>\", \"translated_text\": \"<text>\"}'"
-    )
-
-    # ==========================
-    # SECTION 5: PHASE-BY-PHASE IMPLEMENTATION BREAKDOWN
-    # ==========================
-    p_s5 = doc.add_paragraph()
-    style_heading(p_s5, "5. Implementation Breakdown Across Phases", 16)
-
-    add_para(
-        "The project was executed in three disciplined phases to ensure stability, modularity, and zero bloat."
-    )
-
-    phases_headers = ["Phase", "Milestone Focus", "Delivered Features & Technical Achievements"]
-    phases_rows = [
-        ["Phase 1", "Foundational Architecture & Text Translation", "• Supabase Auth (Sign up, login, auto session restore).\n• User onboarding with preferred language selection.\n• Material 3 ThemeProvider (Light & Dark theme).\n• FastAPI text translation service via Groq Cloud.\n• Non-blocking message fallback."],
-        ["Phase 2", "Social Graph, Real-Time Chat & Rich Media", "• Username search (`@username`) and friendship state machine.\n• 3-Tab Navigation (Chats, Friends, Profile).\n• Realtime 1-on-1 messaging channel.\n• Image sharing with strict client-side <=1 MB validation.\n• Voice note recording & in-bubble audio playback with Web/Mobile codec adaptation."],
-        ["Phase 3", "AI Voice Translation, Search & System Polish", "• Multimodal voice translation via Gemini Flash-Lite.\n• Voice bubble transcript display with 'Show original' toggle.\n• In-Chat instant message search with smooth auto-scroll.\n• In-app animated notification banner for incoming background messages.\n• Real-time delivery & seen status double-ticks (gray to blue)."]
-    ]
-    add_styled_table(phases_headers, phases_rows)
-
-    # ==========================
-    # SECTION 6: KEY CHALLENGES & ENGINEERING SOLUTIONS
-    # ==========================
-    p_s6 = doc.add_paragraph()
-    style_heading(p_s6, "6. Key Challenges Encountered & Engineering Solutions", 16)
-
-    add_para(
-        "During development, several real-world technical hurdles were encountered and resolved with senior-level engineering practices:"
-    )
-
-    add_para(
-        "Web browsers (Chrome MediaRecorder) require `AudioEncoder.opus` (`audio/webm`), whereas native mobile devices use `AudioEncoder.aacLc` (`audio/m4a`). Defaulting to mobile codecs caused the browser mic to fail silently. "
-        "Solution: Implemented platform branching with `kIsWeb`, generating `webm` on browsers and `m4a` on mobile, while reading bytes via `cross_file` `XFile.readAsBytes()` without brittle `dart:io` imports.",
-        bold_prefix="1. Web vs Mobile Audio Codec Incompatibility: "
-    )
-
-    add_para(
-        "Legacy Gemini endpoints (such as `gemini-2.5-flash`) were deprecated for new API keys, returning 404. "
-        "Solution: Integrated the latest production-grade `gemini-3.1-flash-lite` model, which provides ultra-fast audio transcription and translation with strict JSON outputs.",
+    add_body_paragraph(
+        "Older Gemini model endpoints (such as `gemini-2.5-flash`) were retired for new API keys, returning 404 errors. "
+        "Solution: Migrated to Google's production `gemini-3.1-flash-lite` model, which natively supports multimodal audio transcription and translation in a single fast inference pass.",
         bold_prefix="2. Deprecated AI Model Handshake: "
     )
-
-    add_para(
-        "Translations cannot be triggered repeatedly every time a conversation is opened, as this would exhaust API limits and cause lag. "
-        "Solution: Implemented database-level translation caching in Supabase with a unique compound index on `(message_id, target_language)`. Once translated, messages load instantly with 0 external API calls.",
+    add_body_paragraph(
+        "Calling AI translation models repeatedly every time a conversation is opened causes API rate limits, slow UI rendering, and excessive token costs. "
+        "Solution: Implemented a persistent caching layer in Supabase (`translations` table). Uncached messages are translated once and stored permanently, resulting in 0 API tokens and instant loading on subsequent reads.",
         bold_prefix="3. AI Cost & Latency Optimization: "
     )
 
-    add_para(
-        "Users in different chat tabs or browsing friends would miss incoming messages. "
-        "Solution: Created an animated top-level Overlay banner wired to a global Supabase channel that alerts the user and enables 1-tap navigation directly into that conversation.",
-        bold_prefix="4. Background Message Awareness: "
-    )
-
     # ==========================
-    # SECTION 7: VISUAL SCREENSHOT EVIDENCE
+    # SECTION 6: VISUAL SCREENSHOT EVIDENCE
     # ==========================
-    p_s7 = doc.add_paragraph()
-    style_heading(p_s7, "7. Visual Verification & Screenshot Guide", 16)
-
-    add_para(
-        "Paste your captured application screenshots into the designated boxes below for submission to the instructor:"
+    style_heading(doc.add_paragraph(), "6. Visual Verification & Screenshot Guide", 16)
+    add_body_paragraph(
+        "Paste your captured application screenshots into the designated placeholder boxes below:"
     )
 
     add_screenshot_box(
         "1.1",
-        "User Onboarding & Language Selection Screen",
-        "Shows the onboarding screen where a newly registered user selects their preferred language (English, Urdu, Arabic, Spanish, etc.).",
-        "Sign up a new account or view onboarding to capture the language picker interface."
+        "User Onboarding & Language Selection",
+        "Shows the language picker screen where a newly registered user chooses their preferred language.",
+        "Sign up a new account or open onboarding to capture the language picker interface."
     )
-
     add_screenshot_box(
         "1.2",
-        "Friend Management & Tab Navigation",
+        "Friends Management & 3-Tab Shell",
         "Shows the Friends screen with accepted friends and the option to search other users by @username.",
-        "Navigate to the Friends tab, perform a search for a friend username, and capture the friend list."
+        "Navigate to the Friends tab, perform a search, and capture the friend list."
     )
-
     add_screenshot_box(
         "2.1",
-        "Real-Time Chat with Text & Image Sharing",
-        "Shows the active conversation with translated text messages, 'Translated' badge, and full-screen image attachment viewer.",
-        "Send a message in a foreign language (e.g. Urdu) to an English user. Capture the translated text bubble with 'Show original' toggle and photo attachment."
+        "Real-Time Chat & 'Show Original' Toggle",
+        "Shows a conversation with translated text messages, the 'Translated' badge, and the interactive toggle button.",
+        "Send an Urdu message to an English account. Capture the translated bubble with 'Show original' toggle."
     )
-
+    add_screenshot_box(
+        "2.2",
+        "Image Sharing & Full-Screen Viewer",
+        "Demonstrates photo attachment sharing with thumbnail rendering and interactive full-screen viewer.",
+        "Pick and send an image (under 1 MB). Tap on the image in the chat to open the full-screen view."
+    )
     add_screenshot_box(
         "3.1",
-        "AI Voice Translation Bubble & 'Show Original' Toggle",
-        "Shows an incoming voice message with the translated transcript displayed underneath the playback bar and status ticks.",
-        "Record and send a voice note. Capture the recipient bubble showing the player, transcript, and toggle button."
+        "AI Voice Translation Bubble & Transcript",
+        "Shows an incoming voice note with playback controls, the translated transcript underneath, and the 'Translated' chip.",
+        "Record and send a voice note. Capture the recipient bubble showing audio playback and English transcript."
     )
-
     add_screenshot_box(
         "3.2",
         "In-Chat Message Search Screen",
         "Shows the SearchScreen opened from the chat AppBar with matching text, voice transcripts, and photos filtered in real time.",
-        "Tap the magnifying glass icon in chat, type a keyword, and capture the filtered results."
+        "Tap the magnifying glass icon in chat, type a search keyword, and capture the filtered results."
     )
-
     add_screenshot_box(
         "3.3",
         "In-App Notification Banner & Delivery Ticks",
-        "Demonstrates the top overlay notification banner appearing when an incoming message arrives, as well as the blue double-ticks (seen status).",
-        "Leave one user on the Friends screen and send a message from the other account to capture the banner sliding down."
+        "Shows the top animated overlay banner appearing when an incoming message arrives, as well as the blue double-ticks (seen status).",
+        "Leave one user on the Friends screen and send a message from the other account to capture the banner."
     )
-
     add_screenshot_box(
         "3.4",
         "Material 3 Dark Theme Polish",
@@ -430,26 +449,31 @@ def create_final_report():
     )
 
     # ==========================
-    # SECTION 8: CONCLUSION & PRESENTATION GUIDE
+    # SECTION 7: GROUP CONTRIBUTIONS & INSTRUCTOR PRESENTATION
     # ==========================
-    p_s8 = doc.add_paragraph()
-    style_heading(p_s8, "8. Conclusion & Instructor Presentation Guide", 16)
-
-    add_para(
-        "The AI Multilingual Messenger is a complete, production-ready prototype that proves the feasibility "
-        "of seamless, non-blocking real-time translation across text, image, and voice communication. "
-        "By leveraging Flutter's lightweight Provider state management, FastAPI's async backend, and Supabase's "
-        "managed PostgreSQL engine, the system delivers sub-second message delivery with enterprise-grade security."
+    style_heading(doc.add_paragraph(), "7. Group Contributions & Presentation Guide", 16)
+    add_body_paragraph(
+        "The project was successfully executed through collaborative teamwork across the frontend, backend, database, and AI pipelines:"
     )
 
-    add_para(
-        "1. Slide 1 (Introduction): State the problem — language barrier in messaging and the awkwardness of manual translation.\n"
-        "2. Slide 2 (Architecture): Show the Flutter -> FastAPI -> Supabase -> Gemini/Groq 3-tier diagram.\n"
-        "3. Live Demo 1 (Text Translation): Send an Urdu message ('Aap kaise hain?') from User A to User B (English). Show it automatically appear as 'How are you?' and demonstrate the 'Show original' toggle.\n"
-        "4. Live Demo 2 (Voice Note AI): Speak a voice note in Urdu. Play the audio on User B, showing the audio player and the automatically generated English transcript underneath.\n"
-        "5. Live Demo 3 (In-Chat Search): Tap the search icon, type words from the voice transcript, and tap a result to jump directly to it.\n"
-        "6. Live Demo 4 (Notification Banner & Seen Ticks): Switch User B to the Profile screen. Send a message from User A to trigger the top banner. Open it to show the double ticks turn blue.",
-        bold_prefix="Recommended Presentation Script for Instructor: "
+    contrib_headers = ["Group Member", "Roll Number", "Key Contributions & Ownership"]
+    contrib_rows = [
+        ["Rao Hamza Tariq", "CSC-24F-042", "Full-Stack Lead: Supabase Architecture, FastAPI AI Gateway, Gemini Voice Engine & GitHub Actions CI/CD."],
+        ["Imtiaz Maqbool", "SCS-24F-003", "Frontend Lead: Real-Time Chat Screen, Message Bubbles, In-Bubble Audio Player & Codec Adaptation."],
+        ["Fahad Yaseen", "CSC-25S-201", "UI/UX & Navigation: 3-Tab Home Shell, Material 3 Light/Dark ThemeProvider & Onboarding Flows."],
+        ["Muhammad Saad", "CSC-24F-025", "Social Graph & Search: Friendship State Machine, SearchScreen Filtering & Media Viewer."],
+        ["Shahmeer Baqai", "CSC-24F-027", "Notification & Status Systems: In-App Top Notification Banner, Delivery & Seen Ticks, and QA Testing."]
+    ]
+    add_styled_table(contrib_headers, contrib_rows)
+
+    add_body_paragraph(
+        "1. Slide 1 (Title & Problem): Introduce the group members and articulate the problem — manual translation in chat is slow and breaks for voice.\n"
+        "2. Slide 2 (Architecture): Walk through the 3-tier architecture (Flutter + FastAPI + Supabase + Gemini/Groq).\n"
+        "3. Live Demo 1 (Text AI): User A sends Urdu text ('Aap kaise hain?'); User B receives English ('How are you?') and toggles 'Show original'.\n"
+        "4. Live Demo 2 (Voice AI): User A records a voice note; User B plays it and shows the automatically generated English transcript.\n"
+        "5. Live Demo 3 (Search & Ticks): Tap search icon, filter messages, and point out the blue double-ticks indicating seen status.\n"
+        "6. Live Demo 4 (Notification Banner): Send a message while User B is on the Friends tab; show the top banner and jump directly into chat.",
+        bold_prefix="Recommended Presentation Flow: "
     )
 
     # Save document
